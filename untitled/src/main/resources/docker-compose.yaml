@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  user-db:
+    image: postgres:15
+    container_name: user-db
+    environment:
+      POSTGRES_USER: user_admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: taxi_user_db
+    ports:
+      - "5431:5432"
+
+  taxi-redis:
+    image: redis:7
+    container_name: taxi-redis
+    ports:
+      - "6379:6379"
