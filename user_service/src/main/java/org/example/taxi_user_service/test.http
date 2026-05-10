@@ -1,0 +1,10 @@
+POST http://localhost:8080/drivers
+Content-Type: application/json
+
+{
+  "name": "Limbro",
+  "email": "limbro@taxi.com",
+  "phone": "+79991112233",
+  "carModel": "Tesla",
+  "carNumber": "A777AA"
+}
