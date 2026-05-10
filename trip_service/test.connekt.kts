@@ -1,0 +1,4 @@
+
+POST("http://localhost:8081/api/v1/trips?passengerId=1&origin=Home&destination=Office") {
+
+}

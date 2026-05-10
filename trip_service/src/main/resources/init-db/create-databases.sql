@@ -1,0 +1,2 @@
+SELECT 'CREATE DATABASE taxi_user_db' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'taxi_user_db')\gexec
+SELECT 'CREATE DATABASE taxi_trip_db' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'taxi_trip_db')\gexec

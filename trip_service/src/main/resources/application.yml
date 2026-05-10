@@ -1,0 +1,17 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5431/taxi_trip_db
+    username: user_admin
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update # Flyway сам создаст таблицы, Hibernate просто проверяет
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    flyway:
+      enabled: true
+      baseline-on-migrate: true
