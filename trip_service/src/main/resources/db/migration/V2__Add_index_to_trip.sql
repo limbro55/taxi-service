@@ -1,0 +1,1 @@
+CREATE INDEX idx_trip_created_at ON trips(created_at);

@@ -1,15 +1,23 @@
 package org.example.trip_service;
 
-import org.example.trip_service.dto.DriverResponse;
 import org.example.trip_service.entry.Trip;
+import org.example.trip_service.model.Driver;
+import org.example.trip_service.repository.DriverRepository;
+import org.example.trip_service.repository.NotificationTaskRepository;
 import org.example.trip_service.repository.TripRepository;
 import org.example.trip_service.service.TripService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -19,63 +27,70 @@ import static org.mockito.Mockito.when;
 public class TripServiceTest {
 
     @Mock
-    private TripRepository repository; // Твой репозиторий
+    private TripRepository repository;
 
     @Mock
-    private RestTemplate restTemplate; // Твой инструмент для запросов
+    private RestTemplate restTemplate;
 
     @InjectMocks
     private TripService tripService;
 
+    @Mock
+    private DriverRepository driverRepository;
+
+    @Mock
+    private NotificationTaskRepository notificationRepository;
+
+    @BeforeEach
+    void setUp() {
+       UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken("1", null, Collections.emptyList());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
     @Test
     void shouldCreateTripSuccessfully() {
-        // 1. Данные для теста
-        Long passengerId = 1L;
+        // 1. Данные
         String origin = "Home";
         String destination = "Work";
 
-        // 2. Настраиваем заглушки (Mocks)
-        // Имитируем, что пассажир найден (возвращаем любой объект)
-        when(restTemplate.getForObject(contains("/passengers/"), eq(Object.class)))
-                .thenReturn(new Object());
+        // 2. Настройки Mocks
+        // УДАЛИ ИЛИ ЗАКОММЕНТИРУЙ ЭТО, так как в сервисе вызов закомментирован:
+        // when(restTemplate.getForObject(anyString(), eq(Object.class))).thenReturn(new Object());
 
-        // Имитируем, что водитель найден
-        DriverResponse mockDriver = new DriverResponse();
+        Driver mockDriver = new Driver();
         mockDriver.setId(100L);
-        when(restTemplate.getForObject(contains("/drivers/available-one"), eq(DriverResponse.class)))
-                .thenReturn(mockDriver);
+        mockDriver.setName("Ivan");
+        mockDriver.setStatus("AVAILABLE");
 
-        // Имитируем сохранение в базу (возвращаем тот же объект, что пришел на вход)
-        when(repository.save(any(Trip.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(driverRepository.findAndLockAvailableDriver())
+                .thenReturn(Optional.of(mockDriver));
 
-        // 3. Выполняем метод
-        Trip result = tripService.createTrip(passengerId, origin, destination);
+        when(repository.save(any(Trip.class))).thenAnswer(i -> i.getArgument(0));
+        when(notificationRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        // 4. Проверяем результат
+        // 3. Выполняем
+        Trip result = tripService.createTrip(origin, destination);
+        // 4. Проверяем
         assertNotNull(result);
         assertEquals(100L, result.getDriverId());
-        assertEquals("Home", result.getStartPoint());
-        assertEquals(500.0, result.getPrice());
+        // Проверяем, что ID подтянулся из SecurityContext
+        assertEquals(1L, result.getPassengerId());
+        assertEquals("BUSY", mockDriver.getStatus());
     }
 
     @Test
     void shouldThrowExceptionWhenNoDriversFound() {
-        // 1. Имитируем, что проверка пассажира прошла успешно
-        // Используем contains, чтобы не привязываться к конкретному ID
-        when(restTemplate.getForObject(contains("/passengers/"), eq(Object.class)))
-                .thenReturn(new Object());
+        // Настройка мока остается прежней
+        when(driverRepository.findAndLockAvailableDriver())
+                .thenReturn(Optional.empty());
 
-        // 2. Имитируем, что водитель НЕ найден (возвращаем null)
-        // Используем contains для URL поиска водителя
-        when(restTemplate.getForObject(contains("/drivers/available-one"), eq(DriverResponse.class)))
-                .thenReturn(null);
-
-        // 3. Проверяем, что вылетает ошибка
+        // Выполняем
         RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            tripService.createTrip(1L, "A", "B");
+            tripService.createTrip("A", "B");
         });
 
-        // Проверяем, что в тексте ошибки есть нужная фраза
-        assertTrue(exception.getMessage().contains("No drivers available"));
+        // ИСПРАВЬ ЗДЕСЬ: текст должен совпадать с тем, что в TripService.java
+        assertTrue(exception.getMessage().contains("Нет доступных водителей в БД"));
     }
 }

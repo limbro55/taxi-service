@@ -6,5 +6,5 @@ import lombok.Data;
 public class DriverDTO {
     private Long id;
     private String name;
-    private String status; // Сюда прилетит строка "AVAILABLE"
+    private String status;
 }

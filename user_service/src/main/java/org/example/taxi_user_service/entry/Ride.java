@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -32,6 +32,7 @@ public class Ride {
     @Enumerated(EnumType.STRING)
     private RideStatus status;
 
-    private Double fare;
+    @Column(name = "fare")
+    private BigDecimal fare;
     private LocalDateTime createdAt;
 }

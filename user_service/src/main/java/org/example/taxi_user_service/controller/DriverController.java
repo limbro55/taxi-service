@@ -30,4 +30,9 @@ public class DriverController {
     public List<Driver> getAvailable() {
         return service.getAvailable();
     }
+
+    @GetMapping("/available-one")
+    public Driver getAvailableOne() {
+        return service.findAvailable();
+    }
 }

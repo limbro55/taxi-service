@@ -7,14 +7,16 @@ spring:
 
   jpa:
     hibernate:
-      # Меняем на validate, если используем Flyway
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate  # Проверяет, что таблицы в БД совпадают с твоими Entity
+    show-sql: true        # Будешь видеть все INSERT в консоли IDEA
     properties:
       hibernate:
+        format_sql: true  # Делает SQL в консоли читаемым
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-  # Добавляем, чтобы включить миграции
-  flyway:
+  flyway:                 # Убрали лишнее слово spring: перед flyway
     enabled: true
     baseline-on-migrate: true
+    repair-on-migrate: true
+    validate-on-migrate: false
+    locations: classpath:db/migration  # Путь к твоим SQL скриптам

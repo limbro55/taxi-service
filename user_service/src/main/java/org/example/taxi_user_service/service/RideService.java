@@ -11,6 +11,7 @@ import org.example.taxi_user_service.repository.RideRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -40,7 +41,7 @@ public class RideService {
         ride.setStartPoint(startPoint);
         ride.setEndPoint(endPoint);
         ride.setStatus(RideStatus.CREATED);
-        ride.setFare(250.0); // Пока захардкодим цену
+        ride.setFare(BigDecimal.valueOf(250.0)); // Пока захардкодим цену
         ride.setCreatedAt(LocalDateTime.now());
 
         // 4. Меняем статус водителю, чтобы он больше не был доступен другим

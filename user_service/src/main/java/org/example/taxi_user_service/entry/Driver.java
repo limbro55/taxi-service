@@ -29,7 +29,9 @@ public class Driver {
     @Column(nullable = false, unique = true)
     private String phone;
 
+    @Column(name = "car_model")
     private String carModel;
+    @Column(name = "car_number")
     private String carNumber;
 
     @Enumerated(EnumType.STRING)
@@ -37,6 +39,6 @@ public class Driver {
 
     private Double rating = 5.0;
 
-
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

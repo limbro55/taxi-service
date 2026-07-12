@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TripRequest {
-    String startPoint;
-    String endPoint;
+    private String origin;
+    private String destination;
+    private Long passengerId;
 }

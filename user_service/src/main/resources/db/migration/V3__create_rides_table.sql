@@ -1,4 +1,4 @@
-CREATE TABLE rides (
+CREATE TABLE  rides (
     id BIGSERIAL PRIMARY KEY,
     passenger_id BIGINT NOT NULL,
     driver_id BIGINT,

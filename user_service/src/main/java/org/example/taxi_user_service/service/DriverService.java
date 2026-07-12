@@ -29,6 +29,13 @@ public class DriverService {
         return repository.save(driver);
     }
 
+    public Driver findAvailable() {
+        return repository.findByStatus(DriverStatus.AVAILABLE)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No available drivers"));
+    }
+
     public List<Driver> getAvailable() {
         return repository.findByStatus(DriverStatus.AVAILABLE);
     }

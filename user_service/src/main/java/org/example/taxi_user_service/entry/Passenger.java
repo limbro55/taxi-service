@@ -8,6 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "passengers")
 @Data
 public class Passenger {
 
@@ -25,5 +26,6 @@ public class Passenger {
     @NotBlank(message = "Телефон обязателен")
     private String phone;
 
+    @Column(name = "created_at") // <-- фикс 2
     private LocalDateTime createdAt;
 }
